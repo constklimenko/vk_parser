@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ParsingAddsController;
+use App\Providers\ParsingVk;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +21,5 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::get('/users', function (Request $request) {
-    return 'Users';
-});
+Route::get('/parse', [ParsingAddsController::class, 'parse']);
+
