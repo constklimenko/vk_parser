@@ -84,11 +84,11 @@ class VkAdsTokens extends Model
         ];
 
         try {
-            $response = $this->client->request('POST', $this->ads_url . 'api/v2/oauth2/token.json', [
+            $response = $this->client->request('POST', $this->ads_url . 'v2/oauth2/token.json', [
                 'form_params' => $data
             ]);
         } catch (GuzzleException $e) {
-            Log::channel('tokens')->debug($e->getResponse()->getBody()->getContents(), true);
+            Log::channel('tokens')->debug($e->getResponse()->getBody()->getContents());
             return false;
         }
 
