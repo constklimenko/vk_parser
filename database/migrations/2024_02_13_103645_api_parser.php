@@ -11,33 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vk_questions', function (Blueprint $table) {
-            $table->id('question_id');
-            $table->string('text');
-        });
-
-        Schema::create('vk_answers', function (Blueprint $table) {
-            $table->integer('lead_id');
-            $table->integer('question_id');
-            $table->string('answer_option_id');
-            $table->string('answer_text');
-        });
-
-        Schema::create('vk_forms', function (Blueprint $table) {
-            $table->id('form_id');
-            $table->string('name');
-            $table->integer('ad_plan_id');
-            $table->integer('ad_group_id');
+        Schema::create('vk_banners', function (Blueprint $table) {
+            $table->id();
             $table->integer('banner_id');
+            $table->integer('campaign_id');
+            $table->integer('group_id');
+            $table->string('name');
+            $table->string('city');
+            $table->string('section');
+            $table->string('subsection');
+            $table->integer('shows');
+            $table->integer('clicks');
+            $table->integer('leads');
+            $table->string('date');
         });
 
-        Schema::create('vk_leads', function (Blueprint $table) {
-            $table->id('lead_id');
-            $table->integer('form_id');
-            $table->timestamp('created_at');
-            $table->string('name');
-            $table->string('phone');
-            $table->integer('age');
+        Schema::create('vk_ads_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->string('access_token');
+            $table->string('refresh_token');
         });
     }
 
@@ -46,9 +38,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::drop('vk_questions');
-        Schema::drop('vk_answers');
-        Schema::drop('vk_forms');
-        Schema::drop('vk_leads');
+        Schema::drop('vk_banners');
+        Schema::drop('vk_ads_tokens');
     }
 };
