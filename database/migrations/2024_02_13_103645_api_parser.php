@@ -12,18 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vk_banners', function (Blueprint $table) {
-            $table->id();
-            $table->integer('banner_id');
+            $table->integer('banner_id')->primary();
             $table->integer('campaign_id');
             $table->integer('group_id');
             $table->string('name');
             $table->string('city');
             $table->string('section');
             $table->string('subsection');
+        });
+
+        Schema::create('vk_banner_stats', function (Blueprint $table) {
+            $table->id();
+            $table->integer('banner_id');
             $table->integer('shows');
             $table->integer('clicks');
             $table->integer('leads');
             $table->string('date');
+            $table->double('spent');
         });
 
         Schema::create('vk_ads_tokens', function (Blueprint $table) {
@@ -38,7 +43,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::drop('vk_banners');
+        Schema::drop('vk_banner_stats');
+        Schema::drop('vk_banner');
         Schema::drop('vk_ads_tokens');
     }
 };

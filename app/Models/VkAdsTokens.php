@@ -118,4 +118,8 @@ class VkAdsTokens extends Model
         }
         return false;
     }
+
+    public function getAccessToken(){
+        return $this->access_token;
+    }
 }
