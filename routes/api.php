@@ -23,3 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/parse', [ParsingAddsController::class, 'parse']);
 
+Route::middleware('auth.api')->get('/example', function (Request $request) {
+    return 'djfkgdoj';
+});
+
