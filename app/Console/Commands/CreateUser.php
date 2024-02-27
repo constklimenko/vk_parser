@@ -14,7 +14,7 @@ class CreateUser extends Command
      *
      * @var string
      */
-    protected $signature = 'app:create-user  {name}';
+    protected $signature = 'app:create-user  {name} {admin?}';
 
     /**
      * The console command description.
@@ -28,14 +28,15 @@ class CreateUser extends Command
      */
     public function handle()
     {
+        $admin = $this->argument('admin') == 'admin' ? true : false;
         $name = $this->argument('name');
         $token = Str::random(40);
-         $user = User::create([
-            'name' => $name,
+        User::create([
+            'name'      => $name,
             'api_token' => $token,
+            'is_admin'  => $admin
         ]);
-         Log::info($token);
-
+        echo "User $name created with token $token";
 
         return true;
     }

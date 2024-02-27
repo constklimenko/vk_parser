@@ -1,10 +1,8 @@
 <?php
 
 use App\Http\Controllers\ParsingAddsController;
-use App\Providers\ParsingVk;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\CreateUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,13 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
-Route::get('/parse', [ParsingAddsController::class, 'parse']);
-
-Route::middleware('auth.api')->get('/example', function (Request $request) {
-    return 'djfkgdoj';
-});
+Route::middleware('auth.api')->get('/parse', [ParsingAddsController::class, 'parse']);
+Route::middleware('auth.api')->get('/createUser', [CreateUserController::class, 'create']);
 

@@ -20,7 +20,7 @@ return new class extends Migration
                 ->default(null);
             $table->dateTime('updated_at');
             $table->dateTime('created_at');
-
+            $table->boolean('is_admin')->default(false);
         });
     }
 

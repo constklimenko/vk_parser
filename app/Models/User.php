@@ -21,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'api_token'
+        'api_token',
+        'is_admin',
     ];
 
     /**
@@ -43,4 +44,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static function isAdminByToken($token){
+        return self::where('api_token', $token)->get()->first()->is_admin;
+    }
 }
