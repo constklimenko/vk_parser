@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\VkAds;
 use App\Models\VkBanner;
 use App\Models\VkBannerStat;
+use App\Service\BearerToken;
 use App\Service\VkAdsParser;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,6 @@ class CheckSomething extends Command
      */
     public function handle()
     {
-        VkBannerStat::getLastBannerDate(155495610);
+        echo BearerToken::getSampleAdmin();
     }
 }
