@@ -36,6 +36,18 @@ return new class extends Migration
             $table->string('access_token');
             $table->string('refresh_token');
         });
+
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('api_token', 80)
+                ->unique()
+                ->nullable()
+                ->default(null);
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
+            $table->boolean('is_admin')->default(false);
+        });
     }
 
     /**
@@ -43,8 +55,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::drop('vk_banner_stats');
-        Schema::drop('vk_banner');
-        Schema::drop('vk_ads_tokens');
+        Schema::dropIfExists('vk_banner_stats');
+        Schema::dropIfExists('vk_banners');
+        Schema::dropIfExists('vk_ads_tokens');
+        Schema::dropIfExists('users');
     }
 };
