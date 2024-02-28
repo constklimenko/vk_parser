@@ -36,7 +36,7 @@ class CreateUser extends Command
             'api_token' => $token,
             'is_admin'  => $admin
         ]);
-        echo "User $name created with token $token";
+        echo "User $name created with token $token\n";
 
         return true;
     }
