@@ -31,6 +31,7 @@ class VkAdsParser
         $date_start = date( 'Y-m-d H:i:s' );
         try{
         $lastBanner = $this->ads->getBannersList(1,0,'id');
+        Log::info('$lastBanner',$lastBanner);
         $apiBannersNumber = $lastBanner['count'];
         $iterations = ceil($apiBannersNumber / $this->limit);
 
@@ -42,11 +43,11 @@ class VkAdsParser
         }
         }catch (\Exception $e){
             $date_end = date( 'Y-m-d H:i:s' );
-            $messenger->sendMessage('скрипт, начавший работу в'. $date_start.' завершил работу сошибкой в ' . $date_end .'; Ошибка - '. $e->getMessage());
+            $messenger->sendMessage('скрипт, начавший работу в '. $date_start.' завершил работу с ошибкой в ' . $date_end .'; Ошибка - '. $e->getMessage());
             return;
         }
         $date_end = date( 'Y-m-d H:i:s' );
-        $messenger->sendMessage('скрипт, начавший работу в'. $date_start.' завершил работу без ошибок в ' . $date_end);
+        $messenger->sendMessage('скрипт, начавший работу в '. $date_start.' завершил работу без ошибок в ' . $date_end);
     }
 
     private function updateDB($banner)
@@ -143,8 +144,17 @@ class VkAdsParser
     {
         $obBanner = DB::table('vk_banners')->select('banner_id')->where('banner_id', $banner['id'])->get();
         if (empty($obBanner->toArray())) {
-            $row = new VkBanner($banner['id'], $banner['campaign_id'], $banner['ad_group_id'], $banner['name'], $banner['city'], $banner['category'], $banner['subcategory']);
-            return $row->add();
+            return VkBanner::insert(
+                [
+                    'banner_id' => $banner['id'],
+                    'campaign_id' => $banner['campaign_id'],
+                    'group_id' => $banner['ad_group_id'],
+                    'name' => $banner['name'],
+                    'city' => $banner['city'],
+                    'section' => $banner['category'],
+                    'subsection' => $banner['subcategory'],
+                ]
+            );
         }
         return true;
     }
