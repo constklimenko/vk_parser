@@ -24,6 +24,7 @@ class VkAdsParser
         $messenger = new SuccessParsingMessenger();
         $date_start = date( 'Y-m-d H:i:s' );
         try{
+
         $lastBanner = $this->ads->getBannersList(1,0,'id');
         $apiBannersNumber = $lastBanner['count'];
         $iterations = ceil($apiBannersNumber / $this->limit);
@@ -34,6 +35,7 @@ class VkAdsParser
                 $this->updateDB($banner);
             }
         }
+
         }catch (\Exception $e){
             $date_end = date( 'Y-m-d H:i:s' );
             $messenger->sendMessage('скрипт, начавший работу в '. $date_start.' завершил работу с ошибкой в ' . $date_end .'; Ошибка - '. $e->getMessage());
@@ -49,11 +51,17 @@ class VkAdsParser
         $banner = $this->addNameFromGroup($banner);
         $this->addRowToVkBanners($banner);
         $lastExistingDate = VkBannerStat::getLastBannerDate($id);
+        //пропускаем старые данные
+        if(Carbon::now()->format('Y-m-d') <= $lastExistingDate){
+            return true;
+        }
+
         if($lastExistingDate){
             $bannerArray = $this->ads->getBannerStatistics($id, $lastExistingDate);
         }else{
             $bannerArray = $this->ads->getBannerStatistics($id);
         }
+
         if(!empty($bannerArray)){
             $dateList = $this->getDateListById($id);
             $leadsArray = $this->ads->getLeadsListByBanner($id);
@@ -76,6 +84,7 @@ class VkAdsParser
         $group = $this->ads->getGroup($banner['ad_group_id']);
         $nameArray = explode('|', $group['name']);
         $lastWord = $nameArray[count($nameArray) - 1];
+
         if( stripos($lastWord,'[') !== false){
             $nameArray[count($nameArray) - 2] = $nameArray[count($nameArray) - 2] .' | '.  $lastWord;
             unset($nameArray[count($nameArray) - 1]);
