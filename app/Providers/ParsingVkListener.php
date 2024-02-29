@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use App\Service\VkAdsParser;
+use App\Jobs\ProcessParsing;
+use Illuminate\Support\Facades\Log;
 
 class ParsingVkListener
 {
@@ -13,6 +14,6 @@ class ParsingVkListener
      */
     public function handle(ParsingVk $event): void
     {
-        (new VkAdsParser())->parse();
+        ProcessParsing::dispatch();
     }
 }
