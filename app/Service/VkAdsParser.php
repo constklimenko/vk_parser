@@ -21,17 +21,10 @@ class VkAdsParser
 
     public function parse()
     {
-        $this->update();
-    }
-
-
-    private function update()
-    {
         $messenger = new SuccessParsingMessenger();
         $date_start = date( 'Y-m-d H:i:s' );
         try{
         $lastBanner = $this->ads->getBannersList(1,0,'id');
-        Log::info('$lastBanner',$lastBanner);
         $apiBannersNumber = $lastBanner['count'];
         $iterations = ceil($apiBannersNumber / $this->limit);
 
@@ -62,15 +55,20 @@ class VkAdsParser
             $bannerArray = $this->ads->getBannerStatistics($id);
         }
         if(!empty($bannerArray)){
+            $dateList = $this->getDateListById($id);
             $leadsArray = $this->ads->getLeadsListByBanner($id);
             foreach($bannerArray as $item){
-                if(!$this->checkExistenceOfRow($item, $id)){
+                if(!in_array( $item['date'],  $dateList)){
                     $item = $this->prepareItem($item, $leadsArray, $id);
                     $this->addRowToVkBannerStats($item);
                 };
             }
         }
         return true;
+    }
+    private function getDateListById($id){
+        $existingDateList = VkBannerStat::select('date')->where('banner_id', $id)->orderBy('date')->get()->toArray();
+        return array_map(function($d){return $d['date'];}, $existingDateList);
     }
 
     private function addNameFromGroup($banner)
@@ -100,17 +98,6 @@ class VkAdsParser
         }
 
         return $banner;
-    }
-
-    private function checkExistenceOfRow(mixed $item, $id): bool
-    {
-        $row = VkBannerStat::getRow($id,$item['date']);
-
-        if($row !== false){
-            return true;
-        }else{
-            return false;
-        }
     }
 
     private function addRowToVkBannerStats(mixed $item): bool

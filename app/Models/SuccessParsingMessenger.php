@@ -18,7 +18,7 @@ class SuccessParsingMessenger extends Model
         try {
             $r = $client->request('POST', $url, [
                 'json' => [
-                    "message"   => "Hello, World!". date( 'Y-m-d H:i:s' ). ' ' . $message,
+                    "message"   => $message,
                     "user_uuid" => 'test_43',
                     "chat_id"   => 0
                 ]
