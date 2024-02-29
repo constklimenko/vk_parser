@@ -113,6 +113,7 @@ class VkAds
         if (!empty($result['items'])) {
             return $result['items'][0]['rows'];
         }
+        sleep(0.5);
         return [];
     }
 
