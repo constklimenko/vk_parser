@@ -1,0 +1,27 @@
+delete:
+    tags:
+        - User
+    summary: Delete user
+    description: This can only be done by the logged in user.
+    operationId: deleteUser
+    parameters:
+        - name: api_token
+          in: query
+          description: Токен пользователя, который должен быть удалён
+          required: true
+          schema:
+              type: string
+              example: 3ldlBynXsYXUOzpSjvACbNiSGajVw5R1UJZZpGbh
+    responses:
+        '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+        '401':
+          $ref: ../../components/responses/401.yaml

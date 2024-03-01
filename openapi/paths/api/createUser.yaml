@@ -1,0 +1,49 @@
+get:
+  tags:
+    - User
+  summary: Создание нового пользователя API
+  description: >-
+    Помогает получить токен для взаимодействия с API.
+    * name - имя пользователя
+    * admin - права администратора(по умолчанию false)
+  parameters:
+    - in: query
+      name: name
+      required: true
+      schema:
+        type: string
+        description: Имя пользователя
+        example: John
+    - in: query
+      name: admin
+      required: false
+      schema:
+        type: boolean
+        description: Права администратора
+        example: true
+  responses:
+    '200':
+      description: Успешный ответ
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Имя пользователя
+                example: John
+              token:
+                type: string
+                description: Токен для взаимодействия с API
+                example: 3ldlBynXsYXUOzpSjvACbNiSGajVw5R1UJZZpGbh
+              admin:
+                type: boolean
+                description: Права администратора
+                example: true
+              id:
+                type: integer
+                description: Идентификатор пользователя
+                example: 10
+    '401':
+      $ref: ../../components/responses/401.yaml

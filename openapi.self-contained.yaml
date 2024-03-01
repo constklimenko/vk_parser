@@ -1,0 +1,102 @@
+---
+openapi: "3.0.2"
+info:
+  title: "VK DATA"
+  version: "1.0"
+servers:
+- url: "https://localhost"
+paths:
+  /api/createUser:
+    $ref: "#/components/schemas/createUser"
+  /api/deleteUser:
+    $ref: "#/components/schemas/deleteUser"
+components:
+  schemas:
+    createUser:
+      get:
+        tags:
+        - "User"
+        summary: "Создание нового пользователя API"
+        description: "Помогает получить токен для взаимодействия с API. * name - и\
+          мя пользователя * admin - права администратора(по умолчанию false)"
+        parameters:
+        - in: "query"
+          name: "name"
+          required: true
+          schema:
+            type: "string"
+            description: "Имя пользователя"
+            example: "John"
+        - in: "query"
+          name: "admin"
+          required: false
+          schema:
+            type: "boolean"
+            description: "Права администратора"
+            example: true
+        responses:
+          "200":
+            description: "Успешный ответ"
+            content:
+              application/json:
+                schema:
+                  type: "object"
+                  properties:
+                    name:
+                      type: "string"
+                      description: "Имя пользователя"
+                      example: "John"
+                    token:
+                      type: "string"
+                      description: "Токен для взаимодействия с API"
+                      example: "3ldlBynXsYXUOzpSjvACbNiSGajVw5R1UJZZpGbh"
+                    admin:
+                      type: "boolean"
+                      description: "Права администратора"
+                      example: true
+                    id:
+                      type: "integer"
+                      description: "Идентификатор пользователя"
+                      example: 10
+          "401":
+            $ref: "#/components/schemas/401"
+    "401":
+      description: "Неправильный токен авторизации (подходит только токен с правам\
+        и админа)"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                description: "Ошибка"
+                example: "Unauthorized"
+    deleteUser:
+      delete:
+        tags:
+        - "User"
+        summary: "Delete user"
+        description: "This can only be done by the logged in user."
+        operationId: "deleteUser"
+        parameters:
+        - name: "api_token"
+          in: "query"
+          description: "Токен пользователя, который должен быть удалён"
+          required: true
+          schema:
+            type: "string"
+            example: "3ldlBynXsYXUOzpSjvACbNiSGajVw5R1UJZZpGbh"
+        responses:
+          "200":
+            description: "successful operation"
+            content:
+              application/json:
+                schema:
+                  type: "object"
+                  properties:
+                    success:
+                      type: "boolean"
+                      example: true
+          "401":
+            $ref: "#/components/schemas/401"

@@ -1,0 +1,11 @@
+openapi: "3.0.2"
+info:
+  title: VK DATA
+  version: "1.0"
+servers:
+  - url: https://localhost
+paths:
+  /api/createUser:
+    $ref: paths/api/createUser.yaml
+  /api/deleteUser:
+    $ref: paths/api/deleteUser.yaml
