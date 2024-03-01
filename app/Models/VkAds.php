@@ -21,6 +21,7 @@ class VkAds
     public function get(string $path, $params = []){
         try {
             $response = $this->client->request('GET', $this->ads_url . $path, $params);
+            sleep(0.6);
         } catch (GuzzleException $e) {
            Log::debug( $e->getResponse()->getBody()->getContents());
            return [];
