@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BannerStatisticsController;
 use App\Http\Controllers\DeleteUserController;
 use App\Http\Controllers\ParsingAddsController;
 use Illuminate\Support\Facades\Route;
@@ -19,4 +20,5 @@ use \App\Http\Controllers\CreateUserController;
 Route::middleware('auth.api')->get('/parse', [ParsingAddsController::class, 'parse']);
 Route::middleware('auth.api')->get('/createUser', [CreateUserController::class, 'create']);
 Route::middleware('auth.api')->delete('/deleteUser', [DeleteUserController::class, 'delete']);
+Route::middleware('auth.api')->get('/getBannerStatistics', [BannerStatisticsController::class, 'get']);
 
