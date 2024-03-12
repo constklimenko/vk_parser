@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('section');
             $table->string('subsection');
+            $table->string('status');
         });
 
         Schema::create('vk_banner_stats', function (Blueprint $table) {

@@ -1,0 +1,43 @@
+get:
+  tags:
+    - Statistics
+  summary:
+    - Получение статистики по объявлениям
+  description: >-
+    Получение статистики по объявлениям
+  parameters:
+    - name: group_id
+      in: query
+      description: id группы
+      required: false
+      schema:
+        type: int
+        example: 133696335
+    - name: banner_id
+      in: query
+      description: id объявления
+      required: false
+      schema:
+        type: int
+        example: 133696335
+    - name: campaign_id
+      in: query
+      description: id кампании
+      required: false
+      schema:
+        type: int
+        example: 133696335
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+    '401':
+      $ref: ../../components/responses/401.yaml
+
+

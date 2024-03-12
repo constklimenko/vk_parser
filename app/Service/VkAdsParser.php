@@ -24,17 +24,10 @@ class VkAdsParser
         $messenger = new SuccessParsingMessenger();
         $date_start = date( 'Y-m-d H:i:s' );
         try{
-
-        $lastBanner = $this->ads->getBannersList(1,0,'id');
-        $apiBannersNumber = $lastBanner['count'];
-        $iterations = ceil($apiBannersNumber / $this->limit);
-
-        for ($i = 0; $i < $iterations; $i++) {
-            $banners = $this->ads->getBannersList($this->limit, $i * $this->limit, '-id');
-            foreach ($banners['items'] as $banner) {
+            $bannersList = $this->ads->getBannersList();
+            foreach ($bannersList as $banner) {
                 $this->updateDB($banner);
             }
-        }
 
         }catch (\Exception $e){
             $date_end = date( 'Y-m-d H:i:s' );
@@ -149,10 +142,16 @@ class VkAdsParser
                     'city' => $banner['city'],
                     'section' => $banner['category'],
                     'subsection' => $banner['subcategory'],
+                    'status' => $banner['status'],
+                ]
+            );
+        }else{
+            return VkBanner::where('banner_id', $banner['id'])->update(
+                [
+                    'status' => $banner['status'],
                 ]
             );
         }
-        return true;
     }
 
 }

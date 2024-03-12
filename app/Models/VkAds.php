@@ -19,12 +19,23 @@ class VkAds
         $this->access_token =(new VkAdsTokens())->getAccessToken();
     }
     public function get(string $path, $params = []){
+        return $this->tryGet($path, $params);
+    }
+
+    private function tryGet(string $path, $params = []){
         try {
             $response = $this->client->request('GET', $this->ads_url . $path, $params);
             sleep(0.6);
         } catch (GuzzleException $e) {
-           Log::debug( $e->getResponse()->getBody()->getContents());
-           return [];
+            $exceptionArr = json_decode($e->getResponse()->getBody()->getContents())->toArray();
+            Log::debug($exceptionArr);
+            if($exceptionArr['remaining']['1'] == 0){
+                sleep(0.6);
+            }
+            if($exceptionArr['remaining']['3600'] == 0){
+                sleep(300);
+            }
+            return $this->tryGet($path, $params);
         }
         return json_decode($response->getBody()->getContents(), true);
     }
@@ -47,8 +58,37 @@ class VkAds
         return $this->get($path, $params);
     }
 
-    public function getBannersList( int $limit = 1,int $offset = 0, string $sorting = 'id', $ad_group_status = 'active' ): array
+    public function getBannersList( int $limit = 200 ): array
     {
+        $activeBanners = $this->getBannersListOneStatus('active', $limit);
+        $blockedBanners = $this->getBannersListOneStatus('blocked', $limit);
+        $deletedBanners = $this->getBannersListOneStatus('deleted', $limit);
+        return array_merge($activeBanners, $blockedBanners, $deletedBanners);
+    }
+
+    public function getBannersListOneStatus( string $status = 'active', int $limit = 200): array
+    {
+        $bannersList = [];
+        $firstBanner = $this->getBannerListIteration($status);
+        if(!empty($firstBanner['count'])){
+            $apiBannersNumber =  $firstBanner['count'];
+            $iterations = ceil($apiBannersNumber / $limit);
+
+            for ($i = 0; $i < $iterations; $i++) {
+                $banners = $this->getBannerListIteration($status, $limit, $i * $limit, '-id');
+                foreach ($banners['items'] as $banner) {
+                    $bannersList[$banner['id']] = $banner;
+                    $bannersList[$banner['id']]['status'] = $status;
+                }
+            }
+            return $bannersList;
+        }
+
+    }
+
+    public function getBannerListIteration(string $status, int $limit = 1,int $offset = 0, string $sorting = 'id' ): array
+    {
+        sleep(1);
         $params = [
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -58,7 +98,7 @@ class VkAds
                 'limit' => $limit,
                 'offset' => $offset,
                 'sorting' => $sorting,
-                '_ad_group_status' => $ad_group_status
+                '_status' => $status
             ]
         ];
         $path = 'v2/banners.json';
@@ -87,7 +127,7 @@ class VkAds
         $currentDate = Carbon::now();
 
         // Вычитаем один год и один день из текущей даты
-        $allowedDate = $currentDate->subYear()->subDay();
+        $allowedDate = $currentDate->subYear();
 
         if( $dateString == '' )
         {

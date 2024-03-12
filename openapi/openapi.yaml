@@ -9,3 +9,5 @@ paths:
     $ref: paths/api/createUser.yaml
   /api/deleteUser:
     $ref: paths/api/deleteUser.yaml
+  /api/getBannerStatistics:
+    $ref: paths/api/getBannerStatistics.yaml
