@@ -46,6 +46,14 @@ class VkAdsTokens extends Model
             }
         }
 
+        if( $status == 'invalid_token' ){
+            if($this->refreshToken(true)){
+                $status = $this->checkToken();
+            }else{
+                $status = 'error';
+            }
+        }
+
         if($status !== 'valid_token' ){
             $this->valid = false;
         }
@@ -74,21 +82,26 @@ class VkAdsTokens extends Model
      * Обновляет токены
      * @return bool
      */
-    private function refreshToken(): bool
+    private function refreshToken($newToken = false): bool
     {
         $data = [
             'client_id' => env('VK_ADS_CLIENT_ID'),
             'client_secret' => env('VK_ADS_CLIENT_SECRET'),
-            'grant_type' => 'refresh_token',
-            'refresh_token' => $this->refresh_token
         ];
+
+        if($newToken){
+            $data['grant_type'] = 'client_credentials';
+        }else{
+            $data['grant_type'] = 'refresh_token';
+            $data['refresh_token'] = $this->refresh_token;
+        }
 
         try {
             $response = $this->client->request('POST', $this->ads_url . 'v2/oauth2/token.json', [
                 'form_params' => $data
             ]);
         } catch (GuzzleException $e) {
-            Log::channel('tokens')->debug($e->getResponse()->getBody()->getContents());
+            Log::debug($e->getResponse()->getBody()->getContents());
             return false;
         }
 
@@ -99,6 +112,7 @@ class VkAdsTokens extends Model
 
         return $this->refreshDB();
     }
+
 
     /**
      * Обновляет токены в базе данных
