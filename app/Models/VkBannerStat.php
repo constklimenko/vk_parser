@@ -19,37 +19,16 @@ class VkBannerStat extends Model
     public float $spent;
     public $timestamps = false;
 
-    public function __construct($banner_id = 0, $shows = 0, $clicks = 0, $leads = 0, $date = '', $spent = 0)
-    {
-        $this->banner_id = $banner_id;
-        $this->shows = $shows;
-        $this->clicks = $clicks;
-        $this->leads = $leads;
-        $this->date = $date;
-        $this->spent = $spent;
-
-        parent::__construct();
-    }
 
     /**
      * Получает запись из таблицы vk_banners
      * @param $banner_id
      * @return VkBannerStat|false
      */
-    public static function getRow($banner_id, $date): VkBannerStat|false
+    public static function get($banner_id, $date): array|false
     {
         $data = self::where('banner_id', $banner_id)->where('date', $date)->first();
-        if (!$data) {
-            return false;
-        }
-        $data = $data->toArray();
-        $shows = ($data['shows'])??0;
-        $clicks = ($data['clicks'])??0;
-        $leads = ($data['leads'])??0;
-        $date = ($data['date'])??'';
-        $spent = ($data['spent'])??0;
-
-        return new VkBannerStat($banner_id, $shows, $clicks, $leads, $date, $spent);
+        return $data->toArray();
     }
 
     public static function getLastBannerDate($id)
@@ -65,15 +44,15 @@ class VkBannerStat extends Model
      * Добавляет новую запись в таблицу
      * @return bool
      */
-    public function add(): bool
+    public function add($banner_id = 0, $shows = 0, $clicks = 0, $leads = 0, $date = '', $spent = 0): bool
     {
         return self::insert([
-            'banner_id' => $this->banner_id,
-            'shows' => $this->shows,
-            'clicks' => $this->clicks,
-            'leads' => $this->leads,
-            'date' => $this->date,
-            'spent' => $this->spent
+            'banner_id' => $banner_id,
+            'shows' => $shows,
+            'clicks' => $clicks,
+            'leads' => $leads,
+            'date' => $date,
+            'spent' => $spent
         ]);
     }
 

@@ -104,8 +104,8 @@ class VkAdsParser
 
     private function addRowToVkBannerStats(mixed $item): bool
     {
-        $row = new VkBannerStat($item['id'], $item['base']['shows'], $item['base']['clicks'], $item['base']['goals'], $item['date'],$item['base']['spent']);
-        return $row->add();
+        $row = new VkBannerStat();
+        return $row->add($item['id'], $item['base']['shows'], $item['base']['clicks'], $item['base']['goals'], $item['date'],$item['base']['spent']);
     }
 
     /**
