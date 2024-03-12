@@ -27,7 +27,7 @@ class VkAds
             $response = $this->client->request('GET', $this->ads_url . $path, $params);
             sleep(0.6);
         } catch (GuzzleException $e) {
-            $exceptionArr = json_decode($e->getResponse()->getBody()->getContents())->toArray();
+            $exceptionArr = json_decode($e->getResponse()->getBody()->getContents(), true);
             Log::debug($exceptionArr);
             if($exceptionArr['remaining']['1'] == 0){
                 sleep(0.6);
