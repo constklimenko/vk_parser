@@ -29,11 +29,16 @@ class VkAds
         } catch (GuzzleException $e) {
             $exceptionArr = json_decode($e->getResponse()->getBody()->getContents(), true);
             Log::debug($exceptionArr);
-            if($exceptionArr['remaining']['1'] == 0){
-                sleep(0.6);
+            if(!empty($exceptionArr['remaining'])){
+                if($exceptionArr['remaining']['1'] == 0){
+                    sleep(0.6);
+                }
+                if($exceptionArr['remaining']['3600'] == 0){
+                    sleep(300);
+                }
             }
-            if($exceptionArr['remaining']['3600'] == 0){
-                sleep(300);
+            if(!empty($exceptionArr['error']['code']) && ($exceptionArr['error']['code'] == 'expired_token' || $exceptionArr['error']['code'] == 'invalid_token')){
+                new VkAdsTokens();
             }
             return $this->tryGet($path, $params);
         }
