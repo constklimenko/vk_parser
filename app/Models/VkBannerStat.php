@@ -40,7 +40,7 @@ class VkBannerStat extends Model
      * /
      * @return array|false
      */
-    public function get(array $filter = [], array $sort = [], int $limit = 10, int $offset = 0, string $group = 'banner_id'): array|false
+    public function getData(array $filter = [], array $sort = [], int $limit = 10, int $offset = 0, string $group = 'banner_id'): array|false
     {
         $vkBannerStat = $this;
 
