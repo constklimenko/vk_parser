@@ -3,14 +3,22 @@
 namespace App\ClickHouseModels;
 
 use App\ClickHouseModels\ClickHouseClient as Client;
+use Illuminate\Support\Facades\Log;
+use App\ClickHouseModels\Model;
 
-class VkBannerStat
+class VkBannerStat extends Model
 {
-    public function getData(array $filter = [], array $sort = [], int $limit = 10, int $offset = 0, string $group = 'banner_id')
+    public function __construct()
+    {
+        $this->table = 'vk_banner_stats';
+        parent::__construct();
+    }
+
+    public function getData(array $filter = [], array $sort = [], int $limit = 10, int $offset = 0, string $group = '')
     {
         $client = new Client();
-        $query = "SELECT";
-        $queryFrom = "FROM vk_banner_stats AS bs JOIN vk_banners AS b ON bs.banner_id = b.banner_id";
+        $query = "SELECT ";
+        $queryFrom = " FROM vk_banner_stats AS bs JOIN vk_banners AS b ON bs.banner_id = b.id ";
         //фильтрация
         if(!empty($filter)){
             $queryWhere = "WHERE ";
@@ -24,21 +32,21 @@ class VkBannerStat
                         $queryWhereArr[] = "bs.date <= '{$value}'";
                     }
                 }else{
-                    $queryWhereArr[] = "b.{$key} = '{$value}'";
+                    $queryWhereArr[] = "{$key} = '{$value}'";
                 }
             }
             $queryWhere .= implode(' AND ', $queryWhereArr);
         }else{
             $curDate=  date('Y-m-d');
-            $queryWhere = "WHERE b.date < '{$curDate}'";
+            $queryWhere = " WHERE bs.date < '{$curDate}'";
         }
 
         //группировка
         $querySelectArr = [];
-        $querySelectArr[] = 'bs.banner_id';
-        $querySelectArr[] = 'b.city';
-        $querySelectArr[] = 'b.section';
-        $querySelectArr[] = 'b.subsection';
+        $querySelectArr[] = 'bs.banner_id as banner_id';
+        $querySelectArr[] = 'b.city as city';
+        $querySelectArr[] = 'b.`section` as section';
+        $querySelectArr[] = 'b.subsection   as subsection';
         $querySelectArr[] = 'b.name';
 
         if(!empty($group)){
@@ -49,15 +57,16 @@ class VkBannerStat
             $querySelectArr[] = 'IFNULL(sum(bs.spent)/ NULLIF(sum(bs.leads),0),0) as cpl'; //средняя стоимость лида
             $querySelectArr[] = 'IFNULL((sum(bs.clicks)* 100)/ NULLIF(sum(bs.shows),0),0) as ctr';//конверсия показов в клики
 
-            $queryGroup = "GROUP BY ";
+            $queryGroup = " GROUP BY ";
             $queryGroupArr = [];
-            $queryGroupArr[] = 'bs.banner_id as banner_id';
-            $queryGroupArr[] = 'b.city as city';
-            $queryGroupArr[] = 'b.section as section';
-            $queryGroupArr[] = 'b.subsection as subsection';
-            $queryGroupArr[] = 'b.name as name';
+            $queryGroupArr[] = 'bs.banner_id';
+            $queryGroupArr[] = 'b.city';
+            $queryGroupArr[] = 'b.`section` ';
+            $queryGroupArr[] = 'b.subsection ';
+            $queryGroupArr[] = 'b.name';
+            $queryGroupArr[] = 'b.id';
             if( !in_array('b.'.$group, $queryGroupArr)){
-                $queryGroupArr[]= 'b.'.$group;
+                $queryGroupArr[]= 'bs.'.$group;
             }
             $queryGroup .= implode(', ', $queryGroupArr);
         }else{
@@ -71,10 +80,10 @@ class VkBannerStat
 
         //сортировка
         if(!empty($sort)){
-            $queryOrder = "ORDER BY ";
+            $queryOrder = " ORDER BY ";
             $queryOrderArr = [];
             foreach ($sort as $key => $value) {
-                $queryOrderArr[] = "b.{$key} {$value}";
+                $queryOrderArr[] = "bs.{$key} {$value}";
             }
             $queryOrder .= implode(', ', $queryOrderArr);
         }else{
@@ -82,8 +91,8 @@ class VkBannerStat
         }
 
         //лимит и офсет
-        $queryLimit = "LIMIT {$limit}";
-        $queryOffset = "OFFSET {$offset}";
+        $queryLimit = " LIMIT {$limit}";
+        $queryOffset = " OFFSET {$offset}";
 
         $query .= implode(', ', $querySelectArr);
         $query .= $queryFrom;
@@ -93,7 +102,27 @@ class VkBannerStat
         $query .= $queryLimit;
         $query .= $queryOffset;
 
+        Log::info($query);
+
         return $client->select($query)->rows();
+    }
+
+    public static function getLastBannerDate($id)
+    {
+        $client = new Client();
+        $table = (new VkBannerStat)->getTableName();
+        $query = "SELECT max(date) as date FROM {$table} WHERE banner_id = {$id}";
+        $result = $client->select($query)->rows();
+        return $result[0]['date'];
+    }
+
+    public function add($banner_id = 0, $shows = 0, $clicks = 0, $leads = 0, $date = '', $spent = 0)
+    {
+        $client = new Client();
+        $table = $this->getTableName();
+        $query = "INSERT INTO {$table} (banner_id, shows, clicks, leads, spent, date) VALUES ({$banner_id}, {$shows}, {$clicks}, {$leads}, {$spent}, '{$date}')";
+        $res = $client->write($query);
+        return !$res->isError();
     }
 
 }
