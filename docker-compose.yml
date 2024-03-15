@@ -63,6 +63,12 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+    clickhouse:
+        image: yandex/clickhouse-server
+        ports:
+            - '8124:8123'
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
