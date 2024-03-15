@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\VkBannerStat;
+use App\ClickHouseModels\VkBannerStat as ClickHouseVkBannerStat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -10,13 +11,18 @@ class BannerStatisticsController extends Controller
 {
     public function get( Request $request ) {
         $arrRequest = $request->all();
-        Log::debug('BannerStatisticsController get:',$arrRequest);
         $filter = [];
         $sort = (!empty($arrRequest['sort'])) ?[$arrRequest['sort'] => 'desc']: ['banner_id' => 'desc'];
         $limit = (!empty($arrRequest['limit'])) ? $arrRequest['limit'] : 10;
         $offset = (!empty($arrRequest['offset'])) ? $arrRequest['offset'] : 0;
         $group = (!empty($arrRequest['group'])) ? $arrRequest['group'] : 'banner_id';
-        $bannerStat = new VkBannerStat();
+
+        if(env('CLICKHOUSE_ACTIVE') == 'yes') {
+            $bannerStat = new ClickHouseVkBannerStat();
+        } else {
+            $bannerStat = new VkBannerStat();
+        }
+
 
         $data = $bannerStat->getData($filter , $sort, $limit , $offset , $group );
 
