@@ -48,6 +48,7 @@ class VkBannerStat extends Model
         $querySelectArr[] = 'b.`section` as section';
         $querySelectArr[] = 'b.subsection   as subsection';
         $querySelectArr[] = 'b.name';
+        $querySelectArr[] = 'b.status as status';
 
         if(!empty($group)){
             $querySelectArr[] = 'sum(bs.shows) as shows';
@@ -65,6 +66,7 @@ class VkBannerStat extends Model
             $queryGroupArr[] = 'b.subsection ';
             $queryGroupArr[] = 'b.name';
             $queryGroupArr[] = 'b.id';
+            $queryGroupArr[] = 'b.status';
             if( !in_array('b.'.$group, $queryGroupArr)){
                 $queryGroupArr[]= 'bs.'.$group;
             }
@@ -83,11 +85,11 @@ class VkBannerStat extends Model
             $queryOrder = " ORDER BY ";
             $queryOrderArr = [];
             foreach ($sort as $key => $value) {
-                $queryOrderArr[] = "bs.{$key} {$value}";
+                $queryOrderArr[] = "{$key} {$value}";
             }
             $queryOrder .= implode(', ', $queryOrderArr);
         }else{
-            $queryOrder = "ORDER BY bs.banner_id DESC";
+            $queryOrder = " ORDER BY bs.banner_id DESC ";
         }
 
         //лимит и офсет

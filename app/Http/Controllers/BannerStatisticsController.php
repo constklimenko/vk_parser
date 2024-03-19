@@ -11,7 +11,8 @@ class BannerStatisticsController extends Controller
     public function get( Request $request ) {
         $arrRequest = $request->all();
         $filter = [];
-        $sort = (!empty($arrRequest['sort'])) ?[$arrRequest['sort'] => 'desc']: ['banner_id' => 'desc'];
+        $order = (!empty($arrRequest['order'])) ?$arrRequest['order']:'desc';
+        $sort = (!empty($arrRequest['sort'])) ?[$arrRequest['sort'] => $order]: ['banner_id' => $order];
         $limit = (!empty($arrRequest['limit'])) ? $arrRequest['limit'] : 10;
         $offset = (!empty($arrRequest['offset'])) ? $arrRequest['offset'] : 0;
         $group = (!empty($arrRequest['group'])) ? $arrRequest['group'] : 'banner_id';
