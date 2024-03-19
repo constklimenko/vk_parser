@@ -102,8 +102,6 @@ class VkBannerStat extends Model
         $query .= $queryLimit;
         $query .= $queryOffset;
 
-        Log::info($query);
-
         return $client->select($query)->rows();
     }
 
