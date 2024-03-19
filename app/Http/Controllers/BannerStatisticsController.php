@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VkBannerStat;
-use App\ClickHouseModels\VkBannerStat as ClickHouseVkBannerStat;
+use App\ClickHouseModels\VkBannerStat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -17,12 +16,7 @@ class BannerStatisticsController extends Controller
         $offset = (!empty($arrRequest['offset'])) ? $arrRequest['offset'] : 0;
         $group = (!empty($arrRequest['group'])) ? $arrRequest['group'] : 'banner_id';
 
-        if(env('CLICKHOUSE_ACTIVE') == 'yes') {
-            $bannerStat = new ClickHouseVkBannerStat();
-        } else {
-            $bannerStat = new VkBannerStat();
-        }
-
+        $bannerStat = new VkBannerStat();
 
         $data = $bannerStat->getData($filter , $sort, $limit , $offset , $group );
 
