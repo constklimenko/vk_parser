@@ -4,8 +4,8 @@ namespace App\Service;
 
 use App\Models\SuccessParsingMessenger;
 use App\Models\VkAds;
-use App\Models\VkBanner;
-use App\Models\VkBannerStat;
+use App\ClickHouseModels\VkBanner as ClickHouseVkBanner;
+use App\ClickHouseModels\VkBannerStat;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -68,7 +68,7 @@ class VkAdsParser
         return true;
     }
     private function getDateListById($id){
-        $existingDateList = VkBannerStat::select('date')->where('banner_id', $id)->orderBy('date')->get()->toArray();
+        $existingDateList =(new  VkBannerStat)->select('date')->where('banner_id', $id)->orderBy('date')->get()->toArray();
         return array_map(function($d){return $d['date'];}, $existingDateList);
     }
 
@@ -131,11 +131,13 @@ class VkAdsParser
      */
     private function addRowToVkBanners($banner): bool
     {
-        $obBanner = DB::table('vk_banners')->select('banner_id')->where('banner_id', $banner['id'])->get();
+        $obBanner = (new ClickHouseVkBanner())->select('id')->select('status')->where('id', $banner['id'])->get();
+
+        $model = new ClickHouseVkBanner();
         if (empty($obBanner->toArray())) {
-            return VkBanner::insert(
+            return $model->insert(
                 [
-                    'banner_id' => $banner['id'],
+                    'id' => $banner['id'],
                     'campaign_id' => $banner['campaign_id'],
                     'group_id' => $banner['ad_group_id'],
                     'name' => $banner['name'],
@@ -146,11 +148,15 @@ class VkAdsParser
                 ]
             );
         }else{
-            return VkBanner::where('banner_id', $banner['id'])->update(
-                [
-                    'status' => $banner['status'],
-                ]
-            );
+            $arrBanner = $obBanner->toArray();
+            if($banner['status'] != $arrBanner[0]['status']) {
+                return $model->where('id', $banner['id'])->update(
+                    [
+                        'status' => $banner['status'],
+                    ]
+                );
+            }
+            return true;
         }
     }
 
