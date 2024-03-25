@@ -6,27 +6,34 @@ get:
   description: >-
     Получение статистики по объявлениям
   parameters:
-    - name: group_id
+    - name: sort
       in: query
-      description: id группы
+      description: Сортировка по полю
       required: false
       schema:
-        type: int
-        example: 133696335
-    - name: banner_id
+        type: string
+        example: clicks
+    - name: order
       in: query
-      description: id объявления
+      description: Направление сортировки
       required: false
       schema:
-        type: int
-        example: 133696335
-    - name: campaign_id
+        type: string
+        example: desc
+    - name: limit
       in: query
-      description: id кампании
+      description: Количество записей
       required: false
       schema:
-        type: int
-        example: 133696335
+        type: string
+        example: 100
+    - name: offset
+      in: query
+      description: Смещение
+      required: false
+      schema:
+        type: string
+        example: 0
   responses:
     '200':
       description: OK
@@ -37,6 +44,51 @@ get:
             properties:
               data:
                 type: object
+                properties:
+                  count:
+                    type: integer
+                    description: Количество записей
+                    example: 100
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        banner_id:
+                          type: integer
+                          description: Идентификатор объявления
+                        status:
+                          type: string
+                          description: Статус объявления
+                          enum: [ active, blocked, deleted ]
+                        shows:
+                          type: integer
+                          description: Количество просмотров
+                          example: 100
+                        leads:
+                          type: integer
+                          description: Количество лидов
+                          example: 100
+                        clicks:
+                          type: integer
+                          description: Количество кликов
+                          example: 100
+                        spent:
+                          type: float
+                          description: Количество потраченных денег
+                          example: 1000.00
+                        cpl:
+                          type: float
+                          description: Количество потраченных денег на один лид
+                          example: 1000.00
+                        ctr:
+                          type: float
+                          description: Коэффициент конверсии ( отношение количества кликов к количеству просмотров)
+                          example: 0.033
+                        banner_name:
+                          type: string
+                          description: Название объявления
+                          example: "Тюмень | Распродажа | Охваты"
     '401':
       $ref: ../../components/responses/401.yaml
 
